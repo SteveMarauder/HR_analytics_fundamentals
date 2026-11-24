@@ -7,6 +7,8 @@
 - [開啟 GitHub Pages 練習站](https://stevemarauder.github.io/HR_analytics_fundamentals/)
 - Windows 本機使用時，按兩下 **Start-Practice.cmd**，或在專案目錄執行 **python launch.py**。啟動器使用 Python 3 標準函式庫。
 - 第一次使用可先開「新手指南」。每題都有範例資料、起始程式、小示範、提示、參考解法和閱讀來源。
+- 用右上角按鈕切換明暗模式。偏好儲存在目前瀏覽器。
+- 「概念圖」可切換陣列軸、比較合併、拖動信賴區間和投影，也能從圖直接開對應題目。部分題目可直接展開相關概念圖。
 
 ## 課程內容
 

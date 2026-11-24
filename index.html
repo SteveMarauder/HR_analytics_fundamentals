@@ -8,9 +8,18 @@
   <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jK9sAAAAASUVORK5CYII=">
   <title>人資資料練習室｜People Analytics</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./experience.css">
+  <script>
+    try {
+      const preference = localStorage.getItem('hr-analytics-theme');
+      document.documentElement.dataset.theme = preference === 'dark' || preference === 'light'
+        ? preference
+        : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch {}
+  </script>
   <script type="module" src="./app.js"></script>
 </head>
-<body>
+<body data-view="home">
   <aside class="rail">
     <div class="brand">
       <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -29,15 +38,48 @@
 
   <div class="shell">
     <header class="topbar">
+      <a href="#home" id="home-brand" class="home-brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span><span>人資資料練習室</span></a>
       <nav class="top-nav" aria-label="主要頁面">
-        <button type="button" data-page="practice">練習工作台</button>
+        <button type="button" data-page="home">首頁</button>
+        <button type="button" data-page="practice">練習</button>
         <button type="button" data-page="catalog">題庫</button>
+        <button type="button" data-page="concepts">概念圖</button>
         <button type="button" data-page="guide">新手指南</button>
       </nav>
-      <span class="runtime"><span class="runtime-dot" aria-hidden="true"></span><span id="runtime-label" aria-live="polite">Python 待啟動</span></span>
+      <div class="top-tools">
+        <span class="runtime"><span class="runtime-dot" aria-hidden="true"></span><span id="runtime-label" aria-live="polite">Python 待啟動</span></span>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="深色模式" aria-pressed="false" title="切換明暗模式"><span aria-hidden="true" id="theme-icon">☾</span></button>
+      </div>
     </header>
 
-    <main id="practice" class="page">
+    <main id="home" class="page home-page">
+      <section class="home-hero" aria-labelledby="home-title">
+        <div class="hero-content">
+          <p class="hero-label">PEOPLE ANALYTICS LAB</p>
+          <h1 id="home-title" tabindex="-1">從人資資料<br>讀出<span>有用的答案</span></h1>
+          <p class="hero-copy">從寫下第一行 Python，到用資料回答招募、培訓和留任問題。先用概念圖看懂，再進工作台動手驗證。</p>
+          <div class="hero-actions">
+            <button type="button" id="home-start" class="button hero-primary">開始第一題</button>
+            <button type="button" class="button hero-secondary" data-jump="concepts">探索概念圖</button>
+          </div>
+          <p class="hero-meta"><strong>160</strong> 道實作題 <span>·</span> <strong>5</strong> 大主題 <span>·</span> 免安裝，開啟瀏覽器即可練習</p>
+        </div>
+        <div class="hero-visual">
+          <figure class="hero-chart">
+            <figcaption><span class="chart-mark" aria-hidden="true"></span><div><strong>訓練時數 × 技能測驗</strong><small>模擬資料 · 每點代表一位員工</small></div></figcaption>
+            <div id="hero-plot"></div>
+            <div class="chart-footer"><span><i class="legend-point"></i> 員工資料</span><span><i class="legend-line"></i> 迴歸線</span></div>
+          </figure>
+        </div>
+      </section>
+      <section class="home-courses" aria-labelledby="home-courses-title">
+        <div class="home-section-heading"><div><h2 id="home-courses-title">選一個主題，動手練習</h2><p>零基礎從 Python 開始，也可以直接進入想補強的主題。</p></div><button type="button" class="button secondary" data-jump="catalog">看完整題庫</button></div>
+        <div id="home-tracks" class="home-track-grid"></div>
+      </section>
+      <footer class="home-footer"><span>人資資料練習室</span><a href="https://github.com/SteveMarauder/HR_analytics_fundamentals" target="_blank" rel="noopener">GitHub 原始碼</a></footer>
+    </main>
+
+    <main id="practice" class="page" hidden>
       <section class="heading" aria-labelledby="exercise-title">
         <div>
           <p class="eyebrow"><span id="module-number"></span><span id="module-name"></span></p>
@@ -58,6 +100,7 @@
             <div class="task"><h3>你的任務</h3><p id="spec"></p></div>
             <div class="data-header"><h3>輸入資料</h3><span>模擬資料</span></div>
             <div id="datasets"></div>
+            <div id="practice-concepts" class="practice-concepts" hidden></div>
             <div class="support">
               <details><summary>先看一個小示範</summary><p id="example"></p></details>
               <details><summary>卡住了？看提示</summary><p id="hint"></p></details>
@@ -108,6 +151,12 @@
         <p class="catalog-count" id="catalog-count"></p>
         <div id="catalog-list"></div>
       </section>
+    </main>
+
+    <main id="concepts" class="page auxiliary" hidden>
+      <section class="heading"><div><p class="eyebrow">從圖像到程式</p><h1 tabindex="-1">互動概念圖</h1><p class="subtitle">按一下或拖動控制項，觀察資料、圖形和運算結果如何一起改變。</p></div></section>
+      <nav id="concept-filters" class="concept-filters" aria-label="概念圖主題"></nav>
+      <div id="concept-gallery" class="concept-gallery"></div>
     </main>
 
     <main id="guide" class="page auxiliary" hidden>

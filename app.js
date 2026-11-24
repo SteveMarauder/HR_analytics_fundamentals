@@ -1,4 +1,5 @@
 import { datasets, exercises, learning, modules, sources, tracks } from './curriculum.js';
+import { concepts, createConcept, mountHeroPlot } from './concepts.js';
 
 const $ = id => document.getElementById(id);
 const storageKey = 'hr-pandas-practice-v1';
@@ -14,7 +15,21 @@ const editor = $('code');
 const result = $('result');
 const lastResults = new Map();
 let selected = exercises[0];
-let page = 'practice';
+let page = 'home';
+const pages = ['home', 'practice', 'catalog', 'concepts', 'guide'];
+const conceptByExercise = [
+  ['loop', [56, 57, 58, 60, 62]],
+  ['axis', [70, 74, 75, 76, 82, 83]],
+  ['broadcast', [84, 85, 86, 90]],
+  ['join', [28, 29, 34]],
+  ['group', [17, 18, 19, 20, 21, 153, 157]],
+  ['interval', [109, 111, 112, 113]],
+  ['regression', [121, 123, 124]],
+  ['matmul', [129, 134, 135, 136]],
+  ['projection', [141, 142, 145, 146]],
+  ['pca', [148, 149, 150, 151, 152]],
+];
+let conceptTrack = '';
 let worker;
 let workerReady = false;
 const readyLibraries = new Set();
@@ -44,6 +59,7 @@ function showProgress() {
   $('progress').max = exercises.length;
   $('progress').value = count;
   $('progress-label').textContent = count + ' / ' + exercises.length + ' 題';
+  $('home-start').textContent = count > 0 && count < exercises.length ? '繼續練習' : '開始第一題';
   const progressButton = (key, title, i, isTrack) => {
     const field = isTrack ? 'track' : 'module';
     const items = exercises.filter(item => item[field] === key);
@@ -141,6 +157,10 @@ function renderExercise() {
   const inputNodes = selected.inputs.map(renderDataset);
   $('datasets').classList.toggle('scalar-grid', inputNodes.every(node => node.classList.contains('scalar-data')));
   $('datasets').replaceChildren(...inputNodes);
+  const related = conceptByExercise.find(([, ids]) => ids.includes(selected.id));
+  const diagrams = $('practice-concepts');
+  diagrams.hidden = !related;
+  diagrams.replaceChildren(...(related ? [createConcept(related[0], { inline: true })] : []));
   document.querySelectorAll('.support details').forEach(detail => { detail.open = false; });
   $('previous').disabled = index === 0;
   $('next').disabled = index === exercises.length - 1;
@@ -193,8 +213,41 @@ function renderGuide() {
     button.type = 'button';
     button.addEventListener('click', () => navigate('practice', (items.find(item => !isPassed(item.id)) || items[0]).id));
     section.append(button);
+    const visual = element('button', '看概念圖', 'button secondary');
+    visual.type = 'button';
+    visual.addEventListener('click', () => {
+      conceptTrack = key;
+      navigate('concepts');
+    });
+    section.append(' ', visual);
     return section;
   }));
+}
+
+function renderHome() {
+  const symbols = ['{ }', '▦', '▤', 'σ', '⟂'];
+  $('home-tracks').replaceChildren(...tracks.map(([key, title, , cases], index) => {
+    const items = exercises.filter(item => item.track === key);
+    const button = element('button', undefined, 'home-track');
+    const icon = element('span', symbols[index], 'home-track-icon');
+    icon.setAttribute('aria-hidden', 'true');
+    button.type = 'button';
+    button.append(icon, element('strong', title), element('span', cases, 'track-cases'),
+      element('small', items.length + ' 題'));
+    button.addEventListener('click', () => navigate('practice',
+      (items.find(item => !isPassed(item.id)) || items[0]).id));
+    return button;
+  }));
+  mountHeroPlot($('hero-plot'));
+}
+
+function renderConcepts() {
+  for (const button of $('concept-filters').children) {
+    button.setAttribute('aria-pressed', String(button.dataset.track === conceptTrack));
+  }
+  $('concept-gallery').replaceChildren(...concepts
+    .filter(([, track]) => !conceptTrack || track === conceptTrack)
+    .map(([id]) => createConcept(id, { practice: exercise => navigate('practice', exercise) })));
 }
 
 function navigate(target, id = selected.id, historyMode = 'push') {
@@ -203,11 +256,12 @@ function navigate(target, id = selected.id, historyMode = 'push') {
   }
   const changed = page !== target || selected.id !== id;
   page = target;
+  document.body.dataset.view = target;
   selected = exercises.find(item => item.id === id) || exercises[0];
   const hash = target === 'practice' ? '#practice/' + selected.id : '#' + target;
   if (historyMode === 'push' && location.hash !== hash) history.pushState(null, '', hash);
   if (historyMode === 'replace') history.replaceState(null, '', hash);
-  for (const name of ['practice', 'catalog', 'guide']) $(name).hidden = name !== target;
+  for (const name of pages) $(name).hidden = name !== target;
   document.querySelectorAll('[data-page]').forEach(button => {
     if (button.dataset.page === target) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
@@ -215,16 +269,37 @@ function navigate(target, id = selected.id, historyMode = 'push') {
   showProgress();
   if (target === 'practice') renderExercise();
   if (target === 'catalog') renderCatalog();
+  if (target === 'concepts') renderConcepts();
   if (changed && historyMode === 'push') $(target).querySelector('h1').focus({ preventScroll: true });
   if (changed) window.scrollTo(0, 0);
 }
 
 function readLocation(initial = false) {
   const [target, id] = location.hash.slice(1).split('/');
-  const route = ['practice', 'catalog', 'guide'].includes(target) ? target : 'practice';
+  const route = pages.includes(target) ? target : 'home';
   if (!initial && job && (route !== 'practice' || Number(id) !== selected.id)) stopJob('已停止上一題的執行。');
   navigate(route, Number(id) || selected.id, initial ? 'replace' : null);
 }
+
+function setTheme(theme) {
+  const dark = theme === 'dark';
+  document.documentElement.dataset.theme = theme;
+  $('theme-toggle').setAttribute('aria-pressed', String(dark));
+  $('theme-icon').textContent = dark ? '☀' : '☾';
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#0d1628' : '#edf3f5';
+}
+
+setTheme(document.documentElement.dataset.theme || 'light');
+$('theme-toggle').addEventListener('click', () => {
+  const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  setTheme(theme);
+  try { localStorage.setItem('hr-analytics-theme', theme); } catch {}
+});
+const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+systemTheme.addEventListener('change', event => {
+  try { if (localStorage.getItem('hr-analytics-theme')) return; } catch {}
+  setTheme(event.matches ? 'dark' : 'light');
+});
 
 const tokens = /#[^\n]*|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|___|\b(?:True|False|None|lambda|from|import|as|for|if|else|in|not|and|or|def|return)\b|\b\d+(?:\.\d+)?\b/g;
 
@@ -410,6 +485,31 @@ $('filter-track').addEventListener('change', () => {
   renderCatalog();
 });
 renderGuide();
+renderHome();
+for (const [key, title] of [['', '全部'], ...tracks]) {
+  const button = element('button', title);
+  button.type = 'button';
+  button.dataset.track = key;
+  button.addEventListener('click', () => {
+    if (conceptTrack === key) return;
+    conceptTrack = key;
+    renderConcepts();
+  });
+  $('concept-filters').append(button);
+}
+document.querySelectorAll('[data-jump]').forEach(button => {
+  button.addEventListener('click', () => {
+    if (button.dataset.jump === 'concepts') conceptTrack = '';
+    navigate(button.dataset.jump);
+  });
+});
+$('home-brand').addEventListener('click', event => {
+  event.preventDefault();
+  if (page !== 'home') navigate('home');
+});
+$('home-start').addEventListener('click', () => {
+  navigate('practice', (exercises.find(item => !isPassed(item.id)) || exercises[0]).id);
+});
 document.querySelectorAll('[data-page]').forEach(button => {
   button.addEventListener('click', () => {
     if (page !== button.dataset.page) navigate(button.dataset.page);
