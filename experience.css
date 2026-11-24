@@ -20,6 +20,7 @@ body[data-view="home"] .top-nav { margin-left: auto; }
 .theme-toggle span { font: 1.35rem/1 system-ui, sans-serif; }
 .top-nav { gap: clamp(9px, 1.7vw, 24px); }
 .top-nav button { min-height: 44px; }
+.input-meaning { display: block; margin-top: 3px; color: var(--ink); font-weight: 650; }
 
 .home-page { max-width: 1400px; padding-top: clamp(18px, 3vw, 42px); }
 .home-hero { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); align-items: center; gap: clamp(22px, 4.4vw, 74px); border-radius: 23px; padding: clamp(30px, 5vw, 80px) clamp(23px, 4.7vw, 74px); color: #f4f8ff; background: radial-gradient(ellipse at 86% 22%, #30366e 0%, transparent 43%), radial-gradient(ellipse at 10% 100%, #113847 0%, transparent 64%), #0d172e; border: 1px solid #425679; box-shadow: 0 16px 32px #10254924; }

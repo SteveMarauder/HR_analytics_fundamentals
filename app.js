@@ -97,6 +97,7 @@ function renderDataset(key) {
   const kind = 'array' in data ? 'ndarray' : 'value' in data ? 'Python 值' :
     'text' in data ? 'CSV 字串' : data.rows.length + ' 列 × ' + data.names.length + ' 欄';
   label.append(element('code', key), ' · ' + kind);
+  if (data.label) label.append(element('span', data.label, 'input-meaning'));
   const wrap = element('div', undefined, 'data-wrap');
   if ('value' in data || 'array' in data) {
     const raw = data.value ?? data.array;
