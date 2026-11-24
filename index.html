@@ -32,7 +32,7 @@
     <nav id="tracks" aria-label="五大主題"></nav>
     <nav id="modules" aria-label="主題內的單元"></nav>
     <footer class="rail-footer">
-      <a href="#guide" id="source-shortcut">教材與閱讀來源</a>
+      <a href="#outline" id="source-shortcut">課綱與教材依據</a>
     </footer>
   </aside>
 
@@ -45,6 +45,7 @@
         <button type="button" data-page="catalog">題庫</button>
         <button type="button" data-page="concepts">概念圖</button>
         <button type="button" data-page="guide">新手指南</button>
+        <button type="button" data-page="outline">課綱</button>
       </nav>
       <div class="top-tools">
         <span class="runtime"><span class="runtime-dot" aria-hidden="true"></span><span id="runtime-label" aria-live="polite">Python 待啟動</span></span>
@@ -106,7 +107,12 @@
               <details><summary>卡住了？看提示</summary><p id="hint"></p></details>
               <details><summary>看參考解法</summary><p id="note" hidden></p><pre id="solution"></pre><button type="button" id="apply-solution" class="button secondary compact">套用到編輯器</button></details>
             </div>
-            <a id="doc-link" class="doc-link" target="_blank" rel="noopener">閱讀這題的 pandas 文件</a>
+            <section class="exercise-evidence" aria-label="本題的課綱與來源">
+              <h3>本題依據</h3>
+              <p id="exercise-skill"></p>
+              <div id="exercise-references" class="reference-links"></div>
+              <a id="exercise-outline" class="doc-link">看本主題課綱</a>
+            </section>
           </div>
         </section>
 
@@ -157,6 +163,18 @@
       <section class="heading"><div><p class="eyebrow">從圖像到程式</p><h1 tabindex="-1">互動概念圖</h1><p class="subtitle">按一下或拖動控制項，觀察資料、圖形和運算結果如何一起改變。</p></div></section>
       <nav id="concept-filters" class="concept-filters" aria-label="概念圖主題"></nav>
       <div id="concept-gallery" class="concept-gallery"></div>
+    </main>
+
+    <main id="outline" class="page auxiliary" hidden>
+      <section class="heading"><div><h1 tabindex="-1">課綱與題目依據</h1><p class="subtitle">選一個主題，從學習目標查到教材章節和對應題目。</p></div></section>
+      <nav id="outline-tracks" class="concept-filters" aria-label="課綱主題"></nav>
+      <div id="outline-content"></div>
+      <section class="card guide-card sources-card">
+        <h2>題目如何編寫</h2>
+        <p>教材提供概念、方法或工具的定義。本站挑選適合人資分析入門的內容，自行安排課序、編寫情境與模擬資料，並指定每題的輸出和判分規則。例如自願離職率採期初人數作分母，是該題的報表口徑。</p>
+        <p>HR 應用參考 CIPD 的 People Analytics 能力框架，重點是資料準備、負責任地分析，以及用結果回答工作上的問題。</p>
+        <a class="doc-link" href="https://www.cipd.org/en/the-people-profession/the-profession-map/explore-the-profession-map/specialist-knowledge/people-analytics/" target="_blank" rel="noopener">CIPD Profession Map · People Analytics</a>
+      </section>
     </main>
 
     <main id="guide" class="page auxiliary" hidden>

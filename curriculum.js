@@ -4,6 +4,14 @@ import { numpyExercises, numpyDatasets } from './numpy-course.js';
 import { statsExercises, statsDatasets } from './stats-course.js';
 import { linearExercises, linearDatasets } from './linear-course.js';
 import { fieldExercises, fieldDatasets } from './field-course.js';
+import { exerciseReferences } from './outline.js';
+
+const mitNotes = 'https://live.ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/c501620f128ab205bc267770934d707a_MIT18_06SCF11_ZoomNotes.pdf';
+const pandasTopics = {
+  start: '10 分鐘入門', index: '索引與選取', io: '讀寫資料', missing: '缺值',
+  basic: '基本操作', text: '文字處理', groups: '分組', dates: '時間序列',
+  merge: '合併與串接', reshape: '重塑與樞紐表', window: '視窗運算', cat: '類別資料',
+};
 
 export const tracks = [
   ['python', 'Python 基礎', '從變數和條件開始，寫出可重跑的人資資料處理程式。', '在職人數、工時匯入、名單驗證'],
@@ -14,6 +22,10 @@ export const tracks = [
 ];
 
 export const sources = {
+  pyTutorial: ['Python 官方教學 · 章節總覽', 'https://docs.python.org/3/tutorial/'],
+  cs50: ['Harvard CS50P · 課綱與各週主題', 'https://cs50.harvard.edu/python/'],
+  cs50Values: ['Harvard CS50P · 第 0 週，變數與函式', 'https://cs50.harvard.edu/python/weeks/0/'],
+  cs50Files: ['Harvard CS50P · 第 6 週，檔案讀寫', 'https://cs50.harvard.edu/python/weeks/6/'],
   pyIntro: ['Python 官方教學 · 資料型別與運算', 'https://docs.python.org/3/tutorial/introduction.html'],
   pyFlow: ['Python 官方教學 · 控制流程與函式', 'https://docs.python.org/3/tutorial/controlflow.html'],
   pyData: ['Python 官方教學 · 資料結構', 'https://docs.python.org/3/tutorial/datastructures.html'],
@@ -22,6 +34,7 @@ export const sources = {
   pyDate: ['Python 標準函式庫 · datetime', 'https://docs.python.org/3/library/datetime.html'],
   pyJson: ['Python 標準函式庫 · json', 'https://docs.python.org/3/library/json.html'],
   npIntro: ['NumPy 官方 · 初學者指南', 'https://numpy.org/doc/stable/user/absolute_beginners.html'],
+  npFundamentals: ['NumPy 官方 · 基礎主題總覽', 'https://numpy.org/doc/stable/user/basics.html'],
   npIndex: ['NumPy 官方 · 陣列索引', 'https://numpy.org/doc/stable/user/basics.indexing.html'],
   npBroadcast: ['NumPy 官方 · Broadcasting', 'https://numpy.org/doc/stable/user/basics.broadcasting.html'],
   npCopies: ['NumPy 官方 · 複本與檢視', 'https://numpy.org/doc/stable/user/basics.copies.html'],
@@ -38,12 +51,26 @@ export const sources = {
   stChi: ['OpenStax · 卡方分布', 'https://openstax.org/books/introductory-statistics-2e/pages/11-introduction'],
   stReg: ['OpenStax · 線性迴歸與相關', 'https://openstax.org/books/introductory-statistics-2e/pages/12-introduction'],
   stNist: ['NIST/SEMATECH 統計方法手冊 · 探索性資料分析', 'https://www.itl.nist.gov/div898/handbook/eda/eda.htm'],
+  stBootstrap: ['SciPy 文件 · Bootstrap 放回抽樣與百分位區間', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html'],
+  stWelch: ['OpenStax · §10.1 兩獨立樣本的 Welch t 檢定與 Cohen’s d', 'https://openstax.org/books/introductory-statistics-2e/pages/10-1-two-population-means-with-unknown-standard-deviations'],
+  scipyWelch: ['SciPy 文件 · ttest_ind 的 equal_var 選項', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html'],
+  stPaired: ['SciPy 文件 · 配對樣本 t 檢定', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_rel.html'],
+  stWilson: ['SciPy 文件 · 二項比例的 Wilson 區間', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats._result_classes.BinomTestResult.proportion_ci.html'],
+  stBonferroni: ['NIST 手冊 · §7.4.7.3 Bonferroni 方法與不等式', 'https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm'],
+  stSpearman: ['SciPy 文件 · Spearman 等級相關', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html'],
+  stMae: ['scikit-learn 文件 · 平均絕對誤差的定義', 'https://scikit-learn.org/stable/modules/model_evaluation.html#mean-absolute-error'],
   scipy: ['SciPy 官方 · 統計函式', 'https://docs.scipy.org/doc/scipy/reference/stats.html'],
   mit: ['MIT OpenCourseWare 18.06 · Linear Algebra', 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/'],
+  mitCalendar: ['MIT 18.06 · 課程進度與各講主題', 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/calendar/'],
+  mitVectors: ['Gilbert Strang 講義 · §1.1–1.2 向量、內積與範數', mitNotes],
+  mitProjection: ['Gilbert Strang 講義 · §4.2–4.3 投影與最小平方法', mitNotes],
+  mitPca: ['Gilbert Strang 講義 · §7.4 SVD、低秩近似與 PCA', mitNotes],
   npLA: ['NumPy 官方 · Linear algebra', 'https://numpy.org/doc/stable/reference/routines.linalg.html'],
   cipd: ['CIPD · People Analytics Factsheet', 'https://www.cipd.org/en/knowledge/factsheets/analytics-factsheet/'],
+  cipdMap: ['CIPD Profession Map · People Analytics 專業能力', 'https://www.cipd.org/en/the-people-profession/the-profession-map/explore-the-profession-map/specialist-knowledge/people-analytics/'],
+  pdGuide: ['pandas 官方使用指南 · 章節總覽', 'https://pandas.pydata.org/docs/user_guide/index.html'],
   ...Object.fromEntries(Object.entries(pandasDocs).map(([key, slug]) =>
-    [key, ['pandas 官方使用指南', 'https://pandas.pydata.org/docs/user_guide/' + slug + '.html']])),
+    [key, ['pandas 官方 · ' + pandasTopics[key], 'https://pandas.pydata.org/docs/user_guide/' + slug + '.html']])),
 };
 
 export const modules = [
@@ -70,7 +97,12 @@ export const modules = [
 const moduleTrack = Object.fromEntries(modules.map(([id,,,track]) => [id, track]));
 export const datasets = { ...pandasDatasets, ...pythonDatasets, ...numpyDatasets, ...statsDatasets, ...linearDatasets, ...fieldDatasets };
 export const exercises = [...pythonExercises, ...numpyExercises, ...pandasExercises, ...fieldExercises, ...statsExercises, ...linearExercises]
-  .map((item, index) => ({ ...item, track: moduleTrack[item.module], number: index + 1 }));
+  .map((item, index) => ({
+    ...item,
+    track: moduleTrack[item.module],
+    number: index + 1,
+    references: exerciseReferences[item.id] || [item.source],
+  }));
 
 export const learning = {
   python: [

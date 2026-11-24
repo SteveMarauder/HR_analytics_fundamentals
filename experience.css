@@ -18,7 +18,7 @@ body[data-view="home"] .top-nav { margin-left: auto; }
 .theme-toggle { flex: none; display: grid; place-items: center; width: 37px; height: 37px; padding: 0; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); background: var(--surface); }
 .theme-toggle:hover { background: var(--accent-soft); }
 .theme-toggle span { font: 1.35rem/1 system-ui, sans-serif; }
-.top-nav { gap: clamp(9px, 1.7vw, 24px); }
+.top-nav { gap: clamp(9px, 1.7vw, 24px); min-width: 0; overflow-x: auto; scrollbar-width: thin; }
 .top-nav button { min-height: 44px; }
 .input-meaning { display: block; margin-top: 3px; color: var(--ink); font-weight: 650; }
 
@@ -111,6 +111,23 @@ body[data-view="home"] .top-nav { margin-left: auto; }
 .concept-inline { border-color: var(--accent); }
 .concept-inline > summary { color: var(--accent); }
 .concept-inline .concept-body, .concept-inline[open] { padding-bottom: 5px; }
+.exercise-evidence { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.exercise-evidence p, .outline-exercises p { color: var(--muted); margin: 3px 0 5px; }
+.reference-links { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .88rem; overflow-wrap: anywhere; }
+.reference-links a { text-underline-offset: 3px; }
+#outline-tracks a { color: var(--ink); background: var(--surface); padding: 5px 10px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; font-size: .88rem; font-weight: 650; }
+#outline-tracks a:hover { border-color: var(--accent); }
+#outline-tracks a[aria-current="page"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.outline-overview { margin-bottom: 12px; }
+.outline-overview h3, .outline-unit-body h3 { margin: 11px 0 5px; }
+.outline-unit { margin-bottom: 8px; }
+.outline-unit > summary { padding: 10px 15px; }
+.outline-unit > summary span { padding-inline-start: 12px; color: var(--muted); }
+.outline-unit-body { padding: 0 15px 10px; }
+.outline-unit-body p { margin: 0; }
+.outline-exercises { list-style: none; padding: 0; margin: 0; }
+.outline-exercises li { padding: 7px 0; border-top: 1px solid var(--line); }
+.outline-exercises li > a { font-weight: 700; }
 
 :root[data-theme="dark"] { color-scheme: dark; --ink: #e7efff; --muted: #adbdd4; --background: #0d1628; --line: #354865; --teal: #9ceddc; --nav: #101b30; --surface: #17263d; --surface-alt: #182940; --accent: #9ceddc; --accent-soft: #203e49; --violet: #bec1ff; --shadow: #0208162b; }
 [data-theme="dark"] .topbar, [data-theme="dark"] .card { background: var(--surface); }

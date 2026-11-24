@@ -1,5 +1,6 @@
 import { datasets, exercises, learning, modules, sources, tracks } from './curriculum.js';
 import { concepts, createConcept, mountHeroPlot } from './concepts.js';
+import { moduleOutcomes, trackOutlines } from './outline.js';
 
 const $ = id => document.getElementById(id);
 const storageKey = 'hr-pandas-practice-v1';
@@ -16,7 +17,8 @@ const result = $('result');
 const lastResults = new Map();
 let selected = exercises[0];
 let page = 'home';
-const pages = ['home', 'practice', 'catalog', 'concepts', 'guide'];
+const pages = ['home', 'practice', 'catalog', 'concepts', 'guide', 'outline'];
+let outlineTrack = 'python';
 const conceptByExercise = [
   ['loop', [56, 57, 58, 60, 62]],
   ['axis', [70, 74, 75, 76, 82, 83]],
@@ -41,6 +43,15 @@ function element(tag, text, className) {
   if (text !== undefined) node.textContent = text;
   if (className) node.className = className;
   return node;
+}
+
+function sourceLink(key) {
+  const [title, url] = sources[key];
+  const link = element('a', title);
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  return link;
 }
 
 function remember(id, updates) {
@@ -152,9 +163,9 @@ function renderExercise() {
     $(id).textContent = selected[id];
   }
   $('note').hidden = !selected.note;
-  const [sourceTitle, sourceUrl] = sources[selected.source];
-  $('doc-link').href = sourceUrl;
-  $('doc-link').textContent = '閱讀來源 · ' + sourceTitle;
+  $('exercise-skill').textContent = '練習重點 · ' + selected.api;
+  $('exercise-references').replaceChildren(...selected.references.map(sourceLink));
+  $('exercise-outline').href = '#outline/' + selected.track;
   const inputNodes = selected.inputs.map(renderDataset);
   $('datasets').classList.toggle('scalar-grid', inputNodes.every(node => node.classList.contains('scalar-data')));
   $('datasets').replaceChildren(...inputNodes);
@@ -251,6 +262,48 @@ function renderConcepts() {
     .map(([id]) => createConcept(id, { practice: exercise => navigate('practice', exercise) })));
 }
 
+function renderOutline() {
+  const [, title] = tracks.find(([key]) => key === outlineTrack);
+  const outline = trackOutlines[outlineTrack];
+  for (const link of $('outline-tracks').children) {
+    if (link.dataset.track === outlineTrack) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  }
+  const overview = element('section', undefined, 'card guide-card outline-overview');
+  const descriptions = element('dl');
+  descriptions.append(element('dt', '學完能做什麼'), element('dd', outline.outcome),
+    element('dt', '從哪裡開始'), element('dd', outline.prerequisite),
+    element('dt', '本站的範圍與順序'), element('dd', outline.scope));
+  const references = element('div', undefined, 'reference-links');
+  references.append(...outline.references.map(sourceLink));
+  overview.append(element('h2', title), descriptions, element('h3', '主題依據'), references);
+  const units = modules.filter(([, , , track]) => track === outlineTrack).map(([id, name]) => {
+    const [outcome, keys] = moduleOutcomes[id];
+    const items = exercises.filter(item => item.module === id);
+    const section = element('details', undefined, 'card outline-unit');
+    const heading = element('summary');
+    heading.append(element('strong', name), element('span', items.length + ' 題'));
+    const content = element('div', undefined, 'outline-unit-body');
+    const links = element('div', undefined, 'reference-links');
+    links.append(...keys.map(sourceLink));
+    const list = element('ul', undefined, 'outline-exercises');
+    for (const item of items) {
+      const entry = element('li');
+      const exercise = element('a', item.number + '. ' + item.title);
+      exercise.href = '#practice/' + item.id;
+      const evidence = element('div', undefined, 'reference-links');
+      evidence.append(...item.references.map(sourceLink));
+      entry.append(exercise, element('p', item.api), evidence);
+      list.append(entry);
+    }
+    content.append(element('p', outcome), element('h3', '單元依據'), links,
+      element('h3', '題目與對應來源'), list);
+    section.append(heading, content);
+    return section;
+  });
+  $('outline-content').replaceChildren(overview, ...units);
+}
+
 function navigate(target, id = selected.id, historyMode = 'push') {
   if (historyMode && job && (target !== 'practice' || id !== selected.id)) {
     stopJob('已停止上一題的執行。');
@@ -259,7 +312,8 @@ function navigate(target, id = selected.id, historyMode = 'push') {
   page = target;
   document.body.dataset.view = target;
   selected = exercises.find(item => item.id === id) || exercises[0];
-  const hash = target === 'practice' ? '#practice/' + selected.id : '#' + target;
+  const hash = target === 'practice' ? '#practice/' + selected.id :
+    target === 'outline' ? '#outline/' + outlineTrack : '#' + target;
   if (historyMode === 'push' && location.hash !== hash) history.pushState(null, '', hash);
   if (historyMode === 'replace') history.replaceState(null, '', hash);
   for (const name of pages) $(name).hidden = name !== target;
@@ -271,6 +325,7 @@ function navigate(target, id = selected.id, historyMode = 'push') {
   if (target === 'practice') renderExercise();
   if (target === 'catalog') renderCatalog();
   if (target === 'concepts') renderConcepts();
+  if (target === 'outline') renderOutline();
   if (changed && historyMode === 'push') $(target).querySelector('h1').focus({ preventScroll: true });
   if (changed) window.scrollTo(0, 0);
 }
@@ -278,6 +333,7 @@ function navigate(target, id = selected.id, historyMode = 'push') {
 function readLocation(initial = false) {
   const [target, id] = location.hash.slice(1).split('/');
   const route = pages.includes(target) ? target : 'home';
+  if (route === 'outline' && tracks.some(([key]) => key === id)) outlineTrack = id;
   if (!initial && job && (route !== 'practice' || Number(id) !== selected.id)) stopJob('已停止上一題的執行。');
   navigate(route, Number(id) || selected.id, initial ? 'replace' : null);
 }
@@ -487,6 +543,12 @@ $('filter-track').addEventListener('change', () => {
 });
 renderGuide();
 renderHome();
+for (const [key, title] of tracks) {
+  const link = element('a', title);
+  link.href = '#outline/' + key;
+  link.dataset.track = key;
+  $('outline-tracks').append(link);
+}
 for (const [key, title] of [['', '全部'], ...tracks]) {
   const button = element('button', title);
   button.type = 'button';
@@ -519,8 +581,8 @@ document.querySelectorAll('[data-page]').forEach(button => {
 $('first').addEventListener('click', () => navigate('practice', exercises[0].id));
 $('source-shortcut').addEventListener('click', event => {
   event.preventDefault();
-  navigate('guide');
-  $('sources').scrollIntoView({ block: 'nearest' });
+  outlineTrack = selected.track;
+  navigate('outline');
 });
 $('previous').addEventListener('click', () => navigate('practice', exercises[exercises.indexOf(selected) - 1].id));
 $('next').addEventListener('click', () => navigate('practice', exercises[exercises.indexOf(selected) + 1].id));
